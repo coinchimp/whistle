@@ -1,0 +1,55 @@
+name: Build and Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main  # Set to your default branch
+    paths:
+      - 'src/**'      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check Out Code
+      uses: actions/checkout@v3  # Updated to a newer version supporting Node.js 20
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2 
+
+    - name: Log in to Google Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: gcr.io
+        username: _json_key
+        password: ${{ secrets.GCP_RUN_CREDENTIALS }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/whistle:${{ github.sha }}
+
+    - name: Authenticate to Google Cloud manually
+      env:
+        GCP_JSON_KEY: ${{ secrets.GCP_RUN_CREDENTIALS }}  # Pass the secret as an environment variable
+      run: |
+        echo "$GCP_JSON_KEY" > /tmp/gcp-key.json
+        gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+
+
+    - name: Set Google Cloud Project
+      env:
+        GCP_PROJ_ID: ${{ secrets.GOOGLE_PROJECT_ID }}    
+      run: gcloud config set project "$GCP_PROJ_ID"
+
+    - name: Verify Authentication
+      run: |
+        gcloud auth list
+        gcloud config list project
+
+    - name: Deploy to Google Cloud Run
+      run: gcloud run deploy whistle-service --image gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/whistle:${{ github.sha }} --platform managed --region us-central1 --allow-unauthenticated --set-env-vars WEBHOOK_URL=${{ secrets.WEBHOOK_URL }},RUST_LOG="info"
