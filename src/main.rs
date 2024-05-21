@@ -3,18 +3,22 @@ use warp::{Filter, http::StatusCode, Rejection, Reply, reply};
 use std::env;
 use reqwest;
 use log::{info, error};
+use urlencoding::decode;
 
 async fn send_to_discord(path: String, data: Value) -> Result<impl Reply, Rejection> {
     let discord_webhooks_env = env::var("DISCORD_WEBHOOKS").unwrap_or_else(|_| String::from("[]"));
-    info!("DISCORD_WEBHOOKS: {}", discord_webhooks_env); // Debugging line to log the content of DISCORD_WEBHOOKS
+    info!("DISCORD_WEBHOOKS (encoded): {}", discord_webhooks_env); // Debugging line to log the content of DISCORD_WEBHOOKS
 
-    let webhooks: Value = serde_json::from_str(&discord_webhooks_env)
+    let decoded_webhooks = decode(&discord_webhooks_env).unwrap_or_else(|_| String::from("[]"));
+    info!("DISCORD_WEBHOOKS (decoded): {}", decoded_webhooks); // Debugging line to log the decoded content of DISCORD_WEBHOOKS
+
+    let webhooks: Value = serde_json::from_str(&decoded_webhooks)
         .unwrap_or_else(|err| {
             error!("Failed to parse DISCORD_WEBHOOKS: {}", err);
             json!([])
         });
     
-    info!("Parsed webhooks: {:?}", webhooks); // Debugging line to log parsed webhooks 
+    info!("Parsed webhooks: {:?}", webhooks); // Debugging line to log parsed webhooks
 
     let webhook_url = webhooks
         .as_array()
