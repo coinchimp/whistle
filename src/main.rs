@@ -5,8 +5,13 @@ use reqwest;
 use log::{info, error};
 
 async fn send_to_discord(path: String, data: Value) -> Result<impl Reply, Rejection> {
-    let webhooks: Value = serde_json::from_str(&env::var("DISCORD_WEBHOOKS").unwrap_or_else(|_| String::from("[]")))
+    let discord_webhooks_env = env::var("DISCORD_WEBHOOKS").unwrap_or_else(|_| String::from("[]"));
+    info!("DISCORD_WEBHOOKS: {}", discord_webhooks_env); // Debugging line to log the content of DISCORD_WEBHOOKS
+
+    let webhooks: Value = serde_json::from_str(&discord_webhooks_env)
         .unwrap_or_else(|_| json!([]));
+    
+    info!("Parsed webhooks: {:?}", webhooks); // Debugging line to log parsed webhooks
 
     let webhook_url = webhooks
         .as_array()
