@@ -52,9 +52,19 @@ jobs:
         gcloud auth list
         gcloud config list project
 
-    - name: Deploy to Google Cloud Run
+    - name: Verify DISCORD_WEBHOOKS Syntax
+      run: |
+        echo '${{ secrets.DISCORD_WEBHOOKS }}' | jq empty
+      shell: bash
       env:
         DISCORD_WEBHOOKS: ${{ secrets.DISCORD_WEBHOOKS }}
-        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
-        RUST_LOG: "info"
-      run: gcloud run deploy whistle-service --image gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/whistle:${{ github.sha }} --platform managed --region us-central1 --allow-unauthenticated --set-env-vars DISCORD_WEBHOOKS=${{ secrets.DISCORD_WEBHOOKS }},RUST_LOG="info"
+
+    - name: Deploy to Google Cloud Run
+      run: |
+        gcloud run deploy whistle-service \
+          --image gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/whistle:${{ github.sha }} \
+          --platform managed \
+          --region us-central1 \
+          --allow-unauthenticated \
+          --set-env-vars DISCORD_WEBHOOKS="${{ secrets.DISCORD_WEBHOOKS }}",RUST_LOG="info"
+      shell: bash
