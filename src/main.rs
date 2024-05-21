@@ -42,8 +42,16 @@ async fn send_to_discord(data: Value) -> Result<impl Reply, Rejection> {
     } else {
         // If the data is not an object, treat it as a plain text
         json!({
-            "content": data.to_string()
-        })
+            "embeds": [{
+                "author": {
+                    "name": "Whistle: Text Notification",
+                    "url": "https://github.com/coinchimp/whistle",
+                    "icon_url": "https://raw.githubusercontent.com/coinchimp/whistle/main/assets/images/whistle.png"
+                },
+                "description": format!("Event: {}", data.to_string()),
+                "color": "16761035"
+            }]
+        })        
     };
 
     match client.post(&webhook_url).json(&payload).send().await {
