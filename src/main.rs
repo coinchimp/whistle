@@ -9,7 +9,10 @@ async fn send_to_discord(path: String, data: Value) -> Result<impl Reply, Reject
     info!("DISCORD_WEBHOOKS: {}", discord_webhooks_env); // Debugging line to log the content of DISCORD_WEBHOOKS
 
     let webhooks: Value = serde_json::from_str(&discord_webhooks_env)
-        .unwrap_or_else(|_| json!([]));
+        .unwrap_or_else(|err| {
+            error!("Failed to parse DISCORD_WEBHOOKS: {}", err);
+            json!([])
+        });
     
     info!("Parsed webhooks: {:?}", webhooks); // Debugging line to log parsed webhooks
 
