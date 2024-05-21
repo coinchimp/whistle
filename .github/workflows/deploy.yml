@@ -1,4 +1,4 @@
-name: Build and Deploy to Google Cloud Run v0.2a
+name: Build and Deploy to Google Cloud Run v0.2a2
 
 on:
   push:
