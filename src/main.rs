@@ -48,7 +48,7 @@ async fn send_to_discord(path: String, data: Value) -> Result<impl Reply, Reject
             }]
         })
     } else {
-        // If the data is not an object, treat it as plain text
+        // If the data is not an object, treat it as plain text.
         json!({
             "embeds": [{
                 "author": {
