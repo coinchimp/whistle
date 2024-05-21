@@ -29,7 +29,7 @@ async fn send_to_discord(path: String, data: Value) -> Result<impl Reply, Reject
         let event = map.get("event").and_then(Value::as_str).unwrap_or("");
         let interval = map.get("interval").and_then(Value::as_str).unwrap_or("");
 
-        // Determine the color based on close and open prices
+        // Determine the color based on close and open prices 
         let color = if close < open {
             16711680 // Red color in decimal (0xFF0000)
         } else {
