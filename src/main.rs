@@ -86,7 +86,8 @@ async fn main() {
     let port: u16 = env::var("PORT").unwrap_or_else(|_| "8080".to_string()).parse().unwrap();
 
     let webhook_route = warp::post()
-        .and(warp::path("webhook").and(warp::path::param()))
+        .and(warp::path("webhook"))
+        .and(warp::path::param())
         .and(warp::body::json::<Value>())
         .and_then(|path: String, data: Value| send_to_discord(path, data));
 
