@@ -26,7 +26,7 @@ async fn send_to_discord(data: Value) -> Result<impl Reply, Rejection> {
                 "author": {
                     "name": format!("Whistle: {} {} at {}", ticker, event, exchange),
                     "url": "https://github.com/coinchimp/whistle",
-                    "icon_url": "https://github.com/coinchimp/whistle/assets/images/whistle.png"
+                    "icon_url": "https://raw.githubusercontent.com/coinchimp/whistle/main/assets/images/whistle.png"
                 },
                 "description": format!("Open: {}\nClose: {}\nInterval: {}\nVolume: {}\n", open, close, interval, volume),
                 "color": 14177041
