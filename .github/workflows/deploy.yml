@@ -7,7 +7,7 @@ on:
     paths:
       - 'src/**'
     tags:
-      - 'v*'        
+      - 'v*'
 
 jobs:
   build-and-deploy:
@@ -18,7 +18,7 @@ jobs:
       uses: actions/checkout@v3  # Updated to a newer version supporting Node.js 20
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2 
+      uses: docker/setup-buildx-action@v2
 
     - name: Log in to Google Container Registry
       uses: docker/login-action@v2
@@ -42,10 +42,9 @@ jobs:
         echo "$GCP_JSON_KEY" > /tmp/gcp-key.json
         gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
 
-
     - name: Set Google Cloud Project
       env:
-        GCP_PROJ_ID: ${{ secrets.GOOGLE_PROJECT_ID }}    
+        GCP_PROJ_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
       run: gcloud config set project "$GCP_PROJ_ID"
 
     - name: Verify Authentication
@@ -54,4 +53,8 @@ jobs:
         gcloud config list project
 
     - name: Deploy to Google Cloud Run
-      run: gcloud run deploy whistle-service --image gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/whistle:${{ github.sha }} --platform managed --region us-central1 --allow-unauthenticated --set-env-vars WEBHOOK_URL=${{ secrets.WEBHOOK_URL }},RUST_LOG="info"
+      env:
+        DISCORD_WEBHOOKS: ${{ secrets.DISCORD_WEBHOOKS }}
+        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        RUST_LOG: "info"
+      run: gcloud run deploy whistle-service --image gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/whistle:${{ github.sha }} --platform managed --region us-central1 --allow-unauthenticated --set-env-vars DISCORD_WEBHOOKS=${{ secrets.DISCORD_WEBHOOKS }},RUST_LOG="info"
