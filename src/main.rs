@@ -13,11 +13,14 @@ async fn send_to_discord(path: String, data: Value) -> Result<impl Reply, Reject
     let decoded_webhooks: Cow<str> = decode(&discord_webhooks_env).unwrap_or_else(|_| String::from("[]").into());
     info!("DISCORD_WEBHOOKS (decoded): {}", decoded_webhooks); // Debugging line to log the decoded content of DISCORD_WEBHOOKS
 
-    let webhooks: Value = serde_json::from_str(&decoded_webhooks)
-        .unwrap_or_else(|err| {
+    // Ensure that the decoded JSON is properly formatted
+    let webhooks: Value = match serde_json::from_str(&decoded_webhooks) {
+        Ok(value) => value,
+        Err(err) => {
             error!("Failed to parse DISCORD_WEBHOOKS: {}", err);
             json!([])
-        });
+        }
+    };
     
     info!("Parsed webhooks: {:?}", webhooks); // Debugging line to log parsed webhooks
 
