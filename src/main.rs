@@ -21,6 +21,13 @@ async fn send_to_discord(data: Value) -> Result<impl Reply, Rejection> {
         let event = map.get("event").and_then(Value::as_str).unwrap_or("");
         let interval = map.get("interval").and_then(Value::as_str).unwrap_or("");
 
+        // Determine the color based on close and open prices
+        let color = if close < open {
+            16711680 // Red color in decimal (0xFF0000)
+        } else {
+            65280 // Green color in decimal (0x00FF00)
+        };
+
         json!({
             "embeds": [{
                 "author": {
@@ -29,7 +36,7 @@ async fn send_to_discord(data: Value) -> Result<impl Reply, Rejection> {
                     "icon_url": "https://raw.githubusercontent.com/coinchimp/whistle/main/assets/images/whistle.png"
                 },
                 "description": format!("Open: {}\nClose: {}\nInterval: {}\nVolume: {}\n", open, close, interval, volume),
-                "color": 14177041
+                "color": color
             }]
         })
     } else {
