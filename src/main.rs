@@ -40,7 +40,7 @@ async fn send_to_discord(data: Value) -> Result<impl Reply, Rejection> {
             }]
         })
     } else {
-        // If the data is not an object, treat it as a plain text
+        // If the data is not an object, treat it as plain text
         json!({
             "embeds": [{
                 "author": {
@@ -48,8 +48,8 @@ async fn send_to_discord(data: Value) -> Result<impl Reply, Rejection> {
                     "url": "https://github.com/coinchimp/whistle",
                     "icon_url": "https://raw.githubusercontent.com/coinchimp/whistle/main/assets/images/whistle.png"
                 },
-                "description": format!("Event: {}", data.to_string()),
-                "color": "16761035"
+                "description": format!("Event: {}", data),
+                "color": 16761035 // Pink color in decimal (0xFFC0CB)
             }]
         })        
     };
