@@ -46,7 +46,7 @@ async fn send_to_discord(path: String, data: Value) -> Result<impl Reply, Reject
                 let interval = map.get("interval").and_then(Value::as_str).unwrap_or("");
 
                 let color = if close < open {
-                    16711680 // Red color in decimal (0xFF0000)
+                    16711680 // Red color in decimal (0xFF0000) 
                 } else {
                     65280 // Green color in decimal (0x00FF00)
                 };
