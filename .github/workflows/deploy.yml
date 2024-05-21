@@ -5,7 +5,9 @@ on:
     branches:
       - main  # Set to your default branch
     paths:
-      - 'src/**'      
+      - 'src/**'
+    tags:
+      - 'v*'        
 
 jobs:
   build-and-deploy:

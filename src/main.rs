@@ -8,13 +8,36 @@ use log::{info, error}; // Correctly import logging functions directly from the 
 async fn send_to_discord(data: Value) -> Result<impl Reply, Rejection> {
     let webhook_url = env::var("WEBHOOK_URL").unwrap_or_else(|_| String::from("your_webhook_url_here"));
     let client = reqwest::Client::new();
-    let content = data.to_string();
-
+    
     info!("Received data: {}", data);
+    
+    let payload = if let Some(map) = data.as_object() {
+        // Assuming the data is in the expected JSON format
+        let exchange = map.get("exchange").and_then(Value::as_str).unwrap_or("");
+        let ticker = map.get("ticker").and_then(Value::as_str).unwrap_or("");
+        let close = map.get("close").and_then(Value::as_str).unwrap_or("");
+        let open = map.get("open").and_then(Value::as_str).unwrap_or("");
+        let volume = map.get("volume").and_then(Value::as_str).unwrap_or("");
+        let event = map.get("event").and_then(Value::as_str).unwrap_or("");
+        let interval = map.get("interval").and_then(Value::as_str).unwrap_or("");
 
-    let payload = json!({
-        "content": content
-    });
+        json!({
+            "embeds": [{
+                "author": {
+                    "name": format!("Whistle: {} {} at {}", ticker, event, exchange),
+                    "url": "https://github.com/coinchimp/whistle",
+                    "icon_url": "https://github.com/coinchimp/whistle/assets/images/whistle.png"
+                },
+                "description": format!("Open: {}\nClose: {}\nInterval: {}\nVolume: {}\n", open, close, interval, volume),
+                "color": 14177041
+            }]
+        })
+    } else {
+        // If the data is not an object, treat it as a plain text
+        json!({
+            "content": data.to_string()
+        })
+    };
 
     match client.post(&webhook_url).json(&payload).send().await {
         Ok(_) => {
@@ -27,6 +50,7 @@ async fn send_to_discord(data: Value) -> Result<impl Reply, Rejection> {
         }
     }
 }
+
 
 async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::Infallible> {
     info!("Handling rejection: {:?}", err);
