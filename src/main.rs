@@ -14,7 +14,7 @@ async fn send_to_discord(path: String, data: Value) -> Result<impl Reply, Reject
             json!([])
         });
     
-    info!("Parsed webhooks: {:?}", webhooks); // Debugging line to log parsed webhooks
+    info!("Parsed webhooks: {:?}", webhooks); // Debugging line to log parsed webhooks 
 
     let webhook_url = webhooks
         .as_array()
