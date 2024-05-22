@@ -61,11 +61,10 @@ jobs:
 
     - name: Deploy to Google Cloud Run
       run: |
-        DISCORD_WEBHOOKS_ESCAPED=$(printf '%s' "${{ secrets.DISCORD_WEBHOOKS }}" | jq -sRr @uri)
         gcloud run deploy whistle-service \
           --image gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/whistle:${{ github.sha }} \
           --platform managed \
           --region us-central1 \
           --allow-unauthenticated \
-          --set-env-vars DISCORD_WEBHOOKS="${DISCORD_WEBHOOKS_ESCAPED}",RUST_LOG="info"
+          --set-env-vars DISCORD_WEBHOOKS="${{ secrets.DISCORD_WEBHOOKS }}",RUST_LOG="info"
       shell: bash
