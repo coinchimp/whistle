@@ -8,10 +8,10 @@ use std::borrow::Cow;
 
 async fn send_to_discord(path: String, data: Value) -> Result<impl Reply, Rejection> {
     let discord_webhooks_env = env::var("DISCORD_WEBHOOKS").unwrap_or_else(|_| String::from("[]"));
-    info!("DISCORD_WEBHOOKS (encoded): {}", discord_webhooks_env); // Debugging line to log the content of DISCORD_WEBHOOKS
+    info!("DISCORD_WEBHOOKS (encoded): {}", discord_webhooks_env); //  Debugging line to log the content of DISCORD_WEBHOOKS
 
     let decoded_webhooks: Cow<str> = decode(&discord_webhooks_env).unwrap_or_else(|_| String::from("[]").into());
-    info!("DISCORD_WEBHOOKS (decoded): {}", decoded_webhooks); // Debugging line to log the decoded content of DISCORD_WEBHOOKS
+    info!("DISCORD_WEBHOOKS (decoded): {}", decoded_webhooks); //  Debugging line to log the decoded content of DISCORD_WEBHOOKS
 
     // Ensure that the decoded JSON is properly formatted
     let webhooks: Value = match serde_json::from_str(&decoded_webhooks) {
