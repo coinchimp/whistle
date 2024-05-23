@@ -1,4 +1,4 @@
-name: Build and Deploy to Google Cloud Run v0.2a5
+name: Build and Deploy to Google Cloud Run v0.2a6
 
 on:
   push:
@@ -52,20 +52,12 @@ jobs:
         gcloud auth list
         gcloud config list project
 
-    - name: Verify DISCORD_WEBHOOKS Syntax
-      run: |
-        echo '${{ secrets.DISCORD_WEBHOOKS }}' | jq empty
-      shell: bash
-      env:
-        DISCORD_WEBHOOKS: ${{ secrets.DISCORD_WEBHOOKS }}
-
     - name: Deploy to Google Cloud Run
       run: |
-        DISCORD_WEBHOOKS_ENCODED=$(printf '%s' "${{ secrets.DISCORD_WEBHOOKS }}" | jq -sRr @uri)
         gcloud run deploy whistle-service \
           --image gcr.io/${{ secrets.GOOGLE_PROJECT_ID }}/whistle:${{ github.sha }} \
           --platform managed \
           --region us-central1 \
           --allow-unauthenticated \
-          --set-env-vars DISCORD_WEBHOOKS="${DISCORD_WEBHOOKS_ENCODED}",RUST_LOG="debug"
+          --set-env-vars DISCORD_WEBHOOKS="${{ secrets.DISCORD_WEBHOOKS }}",RUST_LOG="debug"
       shell: bash
