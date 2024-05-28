@@ -54,7 +54,7 @@ printf '%s' "${WEBHOOKS}" | jq -sRr @uri
 %5B%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%22path%22%20%3A%20%22bitcoin%22%2C%0A%20%20%20%20%20%20%20%20%22url%22%20%3A%20%22http%3A%2F%2Fyour_webwook_url_bitcoin_alerts%22%0A%20%20%20%20%7D%2C%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%22path%22%20%3A%20%22kaspa%22%2C%0A%20%20%20%20%20%20%20%20%22url%22%20%3A%20%22http%3A%2F%2Fyour_webwook_url_kaspa_alerts%22%0A%20%20%20%20%7D%20%20%20%20%0A%5D%0A
 ```
 
-And copy an d paste this whole coded line to secrets: `DISCORD_WEBHOOKS`
+And copy and paste this whole coded line to the secret: `DISCORD_WEBHOOKS`
 
 ## How to install with google actions
 * Fork this repo
@@ -83,12 +83,22 @@ Just do the standard stuff with Rust Apps
 * Do a `cargo init`
 * Then check dependencies to `Cargo.toml`
 * use `cargo build --release` and use `cargo clean` before to remove any previous build results.
-* Execute it: `WEBHOOK_URL="copy_webhook_URL_from_Discord_server" PORT="8080" RUST_LOG="info" ./target/debug/whistle`
-* Test it: `curl -X POST http://localhost:8080/webhook -H "Content-Type: application/json" -d '{"event": "Crossing trend line"}'`
+* Execute it:
+    ```bash
+    DISCORD_WEBHOOKS="%5B%0A%20%0A%5D%0A.." \ # ..rest of the coded content
+    PORT="8080" RUST_LOG="info" ./target/debug/whistle
+    ```
+* Test it: `curl -X POST http://localhost:8080/webhook/bitcoin -H "Content-Type: application/json" -d '{"event": "Crossing trend line"}'`
 
 ## Test it locally with Dockers
 * Clone the repo
 * Build it: `docker build -t whistle:latest .`
-* Execute it: `docker run -d -e WEBHOOK_URL="copy_webhook_URL_from_Discord_server" -e RUST_LOG="debug" -e PORT="8080" -p 8080:8080 whistle:latest`
-* Test it: `curl -X POST http://localhost:8080/webhook -H "Content-Type: application/json" -d '{"event": "Crossing trend line"}'`
+* Execute it:
+    ```bash
+    d ocker run -d \
+    -e DISCORD_WEBHOOKS="%5B%0A%20%0A%5D%0A.." \ # ..rest of the coded content
+    -e RUST_LOG="debug" \
+    -e PORT="8080" -p 8080:8080 whistle:latest
+    ```
+* Test it: `curl -X POST http://localhost:8080/webhook/bitcoin -H "Content-Type: application/json" -d '{"event": "Crossing trend line"}'`
 
