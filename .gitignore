@@ -1,6 +1,7 @@
 target
 test*
 priv*
+.local*
 
 # Added by cargo
 #
